@@ -51,7 +51,6 @@ function removeDot(id) {
 
 $(document).click(function(event) {
     var element = $(event.target);
-    console.log(element)
     if (element != oldElement) {
         id = element[0].parentElement.id.split("");
         if (element.is('img') && !element[0].src.includes("dot")) {
@@ -65,11 +64,9 @@ $(document).click(function(event) {
             b.state[id[0]-1][id[1]-1].show()
             intLoc = element[0].parentElement.id
         } else if ((element.is('td') && element[0].innerHTML.includes("dot")) || (element.is('img') && element[0].src.includes('dot')) ) {
-            console.log(id.length)
             if (id.length == 1) {
                 id = element[0].id
             } else if (id.length == 2) {
-                console.log(id[0])
                 id = id[0] + id[1]
             }
             
@@ -167,7 +164,11 @@ class Board {
     constructor(){
         this.numWhite = 16
         this.numBlack = 16
-        this.state = [[],[new Pawn("21","b","p1"),new Pawn("22","b","p2")]]
+        this.state = [[],
+        [new Pawn("21","b","p1",false),new Pawn("22","b","p2",false),new Pawn("23","b","p3",false),new Pawn("24","b","p4",false),new Pawn("25","b","p5",false),new Pawn("26","b","p6",false),new Pawn("27","b","p7",false),new Pawn("28","b","p8",false)],
+        [],[],[],[],
+        [new Pawn("71","w","P1",false),new Pawn("72","w","P2",false),new Pawn("73","w","P3",false),new Pawn("74","w","P4",false),new Pawn("75","w","P5",false),new Pawn("76","w","P6",false),new Pawn("77","w","P7",false),new Pawn("78","w","P8",false)],
+        []]
     }
     initialise() {
         var startupFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
@@ -190,16 +191,16 @@ class Board {
 
 
 class Piece {
-    constructor(position, colour, id) {
+    constructor(position, colour, id, hasMoved) {
         this.position = position;
         this.colour = colour;
-        this.hasMoved = false;
+        this.hasMoved = hasMoved;
         this.id = id
     }
 }
 class Pawn extends Piece {
-    constructor(position, colour, id) {
-        super(position, colour, id);
+    constructor(position, colour, id, hasMoved) {
+        super(position, colour, id, hasMoved);
         this.moveableSqrs = 1;
     }
     show() {
@@ -207,22 +208,37 @@ class Pawn extends Piece {
             this.moveableSqrs += 1;
 
         }
+        
+        var col = this.position.split("")[1]
+        
         if (this.colour == "w") {
             this.moveableSqrs *= -1
-        }
-        var row = parseInt(this.position.split("")[0]) + 1
-        var col = this.position.split("")[1]
-        var max  = row + this.moveableSqrs
-        for (var i = row; i < max; i++) {
-            dots.push(placeDot(i.toString() + col))
+            var row = parseInt(this.position.split("")[0]) - 1
+            var max  = row + this.moveableSqrs
+            for (var i = row; (i) > max; i--) {
+                dots.push(placeDot(i.toString() + col))
+            }
+
+        } else {
+            var row = parseInt(this.position.split("")[0]) + 1
+            var max  = row + this.moveableSqrs
+            for (var i = row; i < max; i++) {
+                dots.push(placeDot(i.toString() + col))
+            }
         }
         this.moveableSqrs = 1
     }
     move(pos) {
         $('#'+this.position).html('')
-        console.log(pos)
-        placePiece(this.id.split('')[0], pos)
+        placePiece(this.id.split('')[0], pos);
+        this.hasMoved = true
+        b.state[parseInt(this.position.split("")[0]) - 1][parseInt(this.position.split("")[1]) - 1] = "";
+        b.state[parseInt(pos.split("")[0] - 1)][parseInt(pos.split("")[1] - 1)] = new Pawn(pos, this.colour, this.id, this.hasMoved)
+
     }
+}
+class Rook extends Piece {
+
 }
 
 const b = new Board();
