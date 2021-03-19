@@ -162,25 +162,25 @@ $(document).mousedown(function(event) {
 
 class Board {
     constructor(){
-        this.numWhite = 16
-        this.numBlack = 16
-        this.state = [[],
+        this.numWhite = 16;
+        this.numBlack = 16;
+        this.state = [["","",new Bishop("13","","b1")],
         [new Pawn("21","b","p1",false),new Pawn("22","b","p2",false),new Pawn("23","b","p3",false),new Pawn("24","b","p4",false),new Pawn("25","b","p5",false),new Pawn("26","b","p6",false),new Pawn("27","b","p7",false),new Pawn("28","b","p8",false)],
         [],[],[],[],
         [new Pawn("71","w","P1",false),new Pawn("72","w","P2",false),new Pawn("73","w","P3",false),new Pawn("74","w","P4",false),new Pawn("75","w","P5",false),new Pawn("76","w","P6",false),new Pawn("77","w","P7",false),new Pawn("78","w","P8",false)],
-        []]
+        []];
     }
     initialise() {
-        var startupFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
-        startupFEN = startupFEN.split('/')
+        var startupFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        startupFEN = startupFEN.split('/');
         for (var i = 0; i < startupFEN.length; i++) {
-            var row = startupFEN[i].split('')
+            var row = startupFEN[i].split('');
             for (var j = 0; j < row.length; j++) {
-                var piece = row[j]
+                var piece = row[j];
                 if (isdigit(parseInt(row[j-1])) && isalpha(piece) && row[j-1] != undefined ) {
-                    placePiece(piece, (i+1).toString() + (j + parseInt(row[j-1])).toString())
+                    placePiece(piece, (i+1).toString() + (j + parseInt(row[j-1])).toString());
                 } else if(isalpha(piece)) {
-                    placePiece(piece, (i+1).toString() + (j+1).toString())
+                    placePiece(piece, (i+1).toString() + (j+1).toString());
                 }
             }
         }
@@ -189,39 +189,40 @@ class Board {
 
 
 
-
+// Piece class
 class Piece {
     constructor(position, colour, id, hasMoved) {
         this.position = position;
         this.colour = colour;
         this.hasMoved = hasMoved;
-        this.id = id
+        this.id = id;
     }
 }
+// Pawn class
 class Pawn extends Piece {
     constructor(position, colour, id, hasMoved) {
         super(position, colour, id, hasMoved);
         this.moveableSqrs = 1;
     }
+    // Shows possible moves (can remove pieces)
     show() {
         if (!this.hasMoved) {
             this.moveableSqrs += 1;
 
         }
-        
-        var col = this.position.split("")[1]
+        var col = this.position.split("")[1];
         
         if (this.colour == "w") {
-            this.moveableSqrs *= -1
-            var row = parseInt(this.position.split("")[0]) - 1
-            var max  = row + this.moveableSqrs
+            this.moveableSqrs *= -1;
+            var row = parseInt(this.position.split("")[0]) - 1;
+            var max  = row + this.moveableSqrs;
             for (var i = row; (i) > max; i--) {
-                dots.push(placeDot(i.toString() + col))
+                dots.push(placeDot(i.toString() + col));
             }
 
         } else {
-            var row = parseInt(this.position.split("")[0]) + 1
-            var max  = row + this.moveableSqrs
+            var row = parseInt(this.position.split("")[0]) + 1;
+            var max  = row + this.moveableSqrs;
             for (var i = row; i < max; i++) {
                 dots.push(placeDot(i.toString() + col))
             }
@@ -229,15 +230,67 @@ class Pawn extends Piece {
         this.moveableSqrs = 1
     }
     move(pos) {
-        $('#'+this.position).html('')
+        $('#'+this.position).html('');
         placePiece(this.id.split('')[0], pos);
-        this.hasMoved = true
+        this.hasMoved = true;
         b.state[parseInt(this.position.split("")[0]) - 1][parseInt(this.position.split("")[1]) - 1] = "";
         b.state[parseInt(pos.split("")[0] - 1)][parseInt(pos.split("")[1] - 1)] = new Pawn(pos, this.colour, this.id, this.hasMoved)
-
     }
 }
 class Rook extends Piece {
+    
+}
+class Queen extends Rook {
+
+}
+class King extends Queen {
+    constructor(){
+        super()
+    }
+}
+class Bishop extends Piece {
+    constructor(postion, colour, id) {
+        super(postion, colour, id)
+    }
+    show() {
+        var x = parseInt(this.position.split("")[0]);
+        var y = parseInt(this.position.split("")[1]);
+        var dotLoc = -1;
+        for (var i = 1; i <= 8; i++) {
+            for (var j = 1; j <= 8; j++) {
+                for (var k = 1; k <= 7; k++) {
+                    var l = k
+                    if (j == y+l && i == x+k) {
+                        dotLoc = (x+k).toString() + (y+l).toString()
+                    } else if (j == y+l && i == x-k) {
+                        dotLoc = (x-k).toString() + (y+l).toString()
+                    } else if (j == y-l && i == x-k) {
+                        dotLoc = (x-k).toString() + (y-l).toString()
+                    } else if (j == y-l && i == x+k) {
+                        dotLoc = (x+k).toString() + (y-l).toString()
+                    }
+                    if (parseInt(dotLoc) > 9 && parseInt(dotLoc) < 100) {
+                        if (!dotLoc.includes("9")) {
+                            dots.push(dotLoc)
+                        }  
+                    }
+                    dotLoc = -1
+                }    
+            }
+        }
+        for (var i = 0; i < dots.length; i++) {
+            placeDot(dots[i])
+        }
+    }
+    move(pos){
+        console.log(this.id)
+        $('#'+this.position).html('');
+        placePiece(this.id.split('')[0], pos);
+        b.state[parseInt(this.position.split("")[0]) - 1][parseInt(this.position.split("")[1]) - 1] = "";
+        b.state[parseInt(pos.split("")[0] - 1)][parseInt(pos.split("")[1] - 1)] = new Bishop(pos, this.colour, this.id)
+    }
+}
+class Knight extends Piece {
 
 }
 
