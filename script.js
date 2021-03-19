@@ -164,11 +164,11 @@ class Board {
     constructor(){
         this.numWhite = 16;
         this.numBlack = 16;
-        this.state = [["","",new Bishop("13","","b1")],
+        this.state = [["","",new Bishop("13","b","b1"),"","",new Bishop("16","b","b2"),"",""],
         [new Pawn("21","b","p1",false),new Pawn("22","b","p2",false),new Pawn("23","b","p3",false),new Pawn("24","b","p4",false),new Pawn("25","b","p5",false),new Pawn("26","b","p6",false),new Pawn("27","b","p7",false),new Pawn("28","b","p8",false)],
         [],[],[],[],
         [new Pawn("71","w","P1",false),new Pawn("72","w","P2",false),new Pawn("73","w","P3",false),new Pawn("74","w","P4",false),new Pawn("75","w","P5",false),new Pawn("76","w","P6",false),new Pawn("77","w","P7",false),new Pawn("78","w","P8",false)],
-        []];
+        ["","",new Bishop("83","w","B1"),"","",new Bishop("86","w","B2")]];
     }
     initialise() {
         var startupFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
