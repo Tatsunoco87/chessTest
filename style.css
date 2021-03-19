@@ -1,0 +1,13 @@
+.black {
+    background-color: burlywood;
+}
+.white {
+    background-color: bisque;
+}
+td {
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    width: 50px;
+    height: 50px;
+}
